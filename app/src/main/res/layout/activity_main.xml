@@ -2,6 +2,7 @@
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,16 +14,20 @@
         tools:context="com.naymushin.videofonmv.MainActivity">
 
         <Button
-            android:id="@+id/launch_server_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/server"/>
+        android:id="@+id/start_scanning_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/start"/>
 
-        <Button
-            android:id="@+id/launch_client_button"
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/text_field"
+            android:layout_width="353dp"
             android:layout_height="wrap_content"
-            android:text="@string/client"/>
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:visibility="visible" />
 
     </LinearLayout>
 

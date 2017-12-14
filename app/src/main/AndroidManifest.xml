@@ -24,15 +24,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="com.naymushin.videofonmv.server.ServerActivity"
-            android:label="@string/bluetooth_server"/>
-
-        <activity
-            android:name="com.naymushin.videofonmv.client.ClientActivity"
-            android:label="@string/bluetooth_client"
-            android:windowSoftInputMode="stateHidden"/>
-
     </application>
 
 </manifest>

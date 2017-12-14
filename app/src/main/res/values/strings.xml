@@ -1,19 +1,7 @@
 <resources>
-    <string name="app_name">BLE Testbed</string>
+    <string name="app_name">Videofon MV</string>
 
-    <!-- Main -->
-
-    <string name="server">Server</string>
-    <string name="client">Client</string>
-
-    <!-- Server -->
-
-    <string name="bluetooth_server">Bluetooth Server</string>
-    <string name="actions">Actions</string>
-    <string name="send_timestamp">Send Timestamp</string>
-    <string name="restart">Restart</string>
-
-    <!-- Client -->
+    <!-- Main (Client) -->
 
     <string name="bluetooth_client">Bluetooth Client</string>
     <string name="scanning">Scanning</string>
@@ -26,8 +14,4 @@
     <string name="send">Send</string>
     <string name="request_timestamp">Request Timestamp</string>
 
-    <!-- Logs -->
-
-    <string name="logs">Logs</string>
-    <string name="clear">Clear</string>
 </resources>
