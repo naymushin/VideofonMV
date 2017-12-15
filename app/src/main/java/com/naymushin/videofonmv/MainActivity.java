@@ -3,37 +3,36 @@ package com.naymushin.videofonmv;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 
 import com.naymushin.videofonmv.databinding.ActivityMainBinding;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static com.naymushin.videofonmv.Constants.SCAN_PERIOD;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final long SCAN_PERIOD = 5000;
     private static final int REQUEST_ENABLE_BT = 1;
 
     private ActivityMainBinding mBinding;//ok
 
     private boolean mScanning;
     private Handler mHandler;
-    private Map<String, BluetoothDevice> mScanResults;//ok
+
+    public Map<String, BluetoothDevice> mScanResults;//ok
+
     private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothLeScanner mBluetoothLeScanner;
-    private ScanCallback mScanCallback;
+    private LeDeviceListAdapter mLeDeviceListAdapter;
 
     // оставить, отредактировано
     @Override
@@ -65,16 +64,17 @@ public class MainActivity extends AppCompatActivity {
     // оставить, отредактировано
     // Scanning
     private void startScan() {
+
         if (!hasPermissions() || mScanning) {
             return;
         }
 
+        mLeDeviceListAdapter = new LeDeviceListAdapter();
+
+
         mScanResults = new HashMap<>();//ok
-        mScanCallback = new BtleScanCallback(mScanResults);//ok
 
-        mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();//ok
-
-        mBluetoothLeScanner.startScan(mScanCallback);//ok
+        mBluetoothAdapter.startLeScan(mLeScanCallback);
 
         mHandler = new Handler();//ok
         mHandler.postDelayed(this::stopScan, SCAN_PERIOD);//ok
@@ -84,18 +84,22 @@ public class MainActivity extends AppCompatActivity {
 
     // оставить, отредактировано
     private void stopScan() {
-        if (mScanning && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && mBluetoothLeScanner != null) {
-            mBluetoothLeScanner.stopScan(mScanCallback);
+
+        if (mScanning && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled() && mBluetoothAdapter != null) {
+
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
             scanComplete();
         }
 
-        mScanCallback = null;
+        mLeScanCallback = null;
         mScanning = false;
         mHandler = null;
+
     }
 
     // оставить, отредактировано
     private void scanComplete() {
+
         if (mScanResults.isEmpty()) {
             return;
         }
@@ -108,10 +112,13 @@ public class MainActivity extends AppCompatActivity {
             devices.put(device.getName(), device.getAddress());//ok
         }
 
+
         for(String key : devices.keySet()){
 
             textField.append(key + " " + devices.get(key));
         }
+
+
     }
 
     // оставить, отредактировано
@@ -129,35 +136,55 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
     }
 
-    // оставить, отредактировано
-    private class BtleScanCallback extends ScanCallback {
+    // Adapter for holding devices found through scanning.
+    private class LeDeviceListAdapter extends BaseAdapter {
 
-        private Map<String, BluetoothDevice> mScanResults;
-
-        BtleScanCallback(Map<String, BluetoothDevice> scanResults) {
-            mScanResults = scanResults;
+        public LeDeviceListAdapter() {
+            super();
+            mScanResults = new HashMap<>();
         }
 
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            addScanResult(result);
-        }
+        public void addDevice(BluetoothDevice device) {
+            if(!mScanResults.containsKey(device.getName())) {
 
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            for (ScanResult result : results) {
-                addScanResult(result);
+                mScanResults.put(device.getName(), device);
             }
         }
 
         @Override
-        public void onScanFailed(int errorCode) {
+        public int getCount() {
+            return mScanResults.size();
         }
 
-        private void addScanResult(ScanResult result) {
-            BluetoothDevice device = result.getDevice();
-            String deviceAddress = device.getAddress();
-            mScanResults.put(deviceAddress, device);
+        @Override
+        public Object getItem(int i) {
+            return mScanResults.get(0);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+
+            return view;
         }
     }
+
+    // Device scan callback.
+    private BluetoothAdapter.LeScanCallback mLeScanCallback =
+            new BluetoothAdapter.LeScanCallback() {
+
+                @Override
+                public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mLeDeviceListAdapter.addDevice(device);
+                        }
+                    });
+                }
+            };
 }
