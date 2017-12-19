@@ -1,5 +1,6 @@
 package com.naymushin.videofonmv;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -14,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,6 +39,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.naymushin.videofonmv.Constants.MY_PERMISSIONS_REQUEST_COARSE_LOCATION;
+import static com.naymushin.videofonmv.Constants.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
 import static com.naymushin.videofonmv.Constants.SCAN_PERIOD;
 
 public class MainActivity extends AppCompatActivity {
@@ -83,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
                 startScan();
             }
         });
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                MY_PERMISSIONS_REQUEST_COARSE_LOCATION);
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                MY_PERMISSIONS_REQUEST_FINE_LOCATION);
     }
 
     // оставить, отредактировано
@@ -208,6 +220,10 @@ public class MainActivity extends AppCompatActivity {
         mBluetoothAdapter.startDiscovery();
         //
 
+        Toast toast = Toast.makeText(getApplicationContext(),
+                "startdiscovery", Toast.LENGTH_SHORT);
+        toast.show();
+
         //adapter.notifyDataSetChanged();
 
 //        ArrayAdapter<BtDevice> adapter = new ArrayAdapter<BtDevice>(this, android.R.layout.simple_list_item_2, android.R.id.text1, devices) {
@@ -288,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                 short rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI,Short.MIN_VALUE);
                 dataToEnter.add("Name: " + device.getName() + "\n" +"Address: "+ device.getAddress() + "\n" +"rssi: "+ rssi +" dBm");
                 adapter.notifyDataSetChanged();
-                //Toast.makeText(getApplicationContext(),"  RSSI: " + rssi + "dBm", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"  RSSI: " + rssi + "dBm", Toast.LENGTH_SHORT).show();
             }
         }
     };
